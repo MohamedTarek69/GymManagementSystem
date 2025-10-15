@@ -13,11 +13,15 @@ namespace GymManagementDAL.Repository.Classes
     {
         private readonly GymDbContext _dbContext;
 
-        public UnitOfWork(GymDbContext dbContext) 
+        public UnitOfWork(GymDbContext dbContext, ISessionRepository sessionRepository) 
         {
             _dbContext = dbContext;
+            this.sessionRepository = sessionRepository;
         }
         private readonly Dictionary<Type, object> _repositories = new();
+
+        public ISessionRepository sessionRepository { get; }
+
         // Key : Type of Entity (Member , Trainer , Session)
         // Value : Repository Instance (GenericRepository<Member> , GenericRepository<Trainer> , GenericRepository<Session>)
         public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity, new()
