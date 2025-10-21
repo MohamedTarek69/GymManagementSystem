@@ -1,4 +1,6 @@
 using GymManagementBLL.MappingProfiles;
+using GymManagementBLL.Services.Classes;
+using GymManagementBLL.Services.Interfaces;
 using GymManagementDAL.Data.Contexts;
 using GymManagementDAL.Data.DataSeed;
 using GymManagementDAL.Entities;
@@ -35,6 +37,7 @@ namespace GymManagementPL
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); 
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
             builder.Services.AddAutoMapper(X => X.AddProfile(new MappingProfile()));
+            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
             var app = builder.Build();
 
@@ -68,6 +71,13 @@ namespace GymManagementPL
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
+            //app.MapControllerRoute(
+            //    name: "Trainers",
+            //    pattern: "Coach/{action=Index}",
+            //    defaults: new { Controller = "Trainer" , action = "Index" })
+            //    .WithStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
