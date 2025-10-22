@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.ViewModels.TrainerViewModels
 {
-    internal class TrainerToUpdateViewModel
+    public class TrainerToUpdateViewModel
     {
+        public string Name { get; set; } = null!;
+
         [Required(ErrorMessage = "Email Is Required")]
         [StringLength(100, MinimumLength = 5, ErrorMessage = "Email Must Be Between 5 And 100 Characters")]
         [DataType(DataType.EmailAddress)]
