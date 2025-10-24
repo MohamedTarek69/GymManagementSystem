@@ -1,32 +1,61 @@
-using System.Diagnostics;
-using GymManagementPL.Models;
+﻿using GymManagementBLL.Services.Interfaces;
+using GymManagementDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementPL.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IAnalyticsService _analyticsService;
 
-        public HomeController(ILogger<HomeController> logger)
+        // Action 
+        // BaseURL/Home/Index
+        //  [NonAction]
+
+        public HomeController(IAnalyticsService analyticsService) 
         {
-            _logger = logger;
+            _analyticsService = analyticsService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var analyticsData = _analyticsService.GetAnalyticsData();
+            return View(analyticsData);
         }
 
-        public IActionResult Privacy()
+        public IActionResult Trainers()
         {
-            return View();
+            var Trainers = new List<Trainer>()
+            {
+                new Trainer(){ Name = "Mohamed Tarek", Phone = "01002097078" },
+                new Trainer(){ Name = "Ahmed Samy", Phone = "01016334658" }
+            };
+            return Json(Trainers); 
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Redirect()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return Redirect("https://www.google.com");
         }
+
+        public IActionResult Content()
+        {
+            return Content("<h1>Welcome to Gym Management System</h1>", "text/html");
+        }
+
+        public IActionResult DownloadFile()
+        {
+            var FilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","Files", "plans.Json");
+
+            var FileBytes = System.IO.File.ReadAllBytes(FilePath);
+
+            return File(FileBytes,"Text/Json","DownloadFile.Json" );
+        }
+
+        public IActionResult EmptyAction()
+        {
+            return new EmptyResult();
+        }
+
     }
 }
