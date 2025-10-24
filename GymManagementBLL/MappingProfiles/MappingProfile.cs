@@ -139,9 +139,14 @@ namespace GymManagementBLL.MappingProfiles
                    .ForMember(dest => dest.CategoryName, Options => Options.MapFrom(src => src.SessionCategory.CategoryName))
                    .ForMember(dest => dest.AvailableSlots, Options => Options.Ignore());
 
-            CreateMap<CreateSessionViewModel, Session>();
+            CreateMap<CreateSessionViewModel, Session>().ReverseMap();
 
             CreateMap<Session, UpdateSessionViewModel>().ReverseMap();
+
+            CreateMap<Trainer, TrainerSelectViewModel>();
+
+            CreateMap<Category, CategorySelectViewModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CategoryName));
         }
         private void MapMember()
         {
