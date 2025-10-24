@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class MemberService : IMemberService
+    public class MemberService : IMemberService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -64,7 +64,7 @@ namespace GymManagementBLL.Services.Classes
         {
             try
             {
-                
+
                 if (IsEmailExists(createMember.Email) || IsPhoneExists(createMember.Phone)) return false;
 
                 // CreateMemberViewModel => Member ===> Mapping
@@ -73,10 +73,10 @@ namespace GymManagementBLL.Services.Classes
                 _unitOfWork.GetRepository<Member>().Add(member);
                 return _unitOfWork.SaveChanges() > 0;
             }
-            catch 
+            catch
             {
                 return false;
-            }   
+            }
         }
 
         public MemberViewModel? GetMemberDetails(int MemberId)
@@ -129,7 +129,14 @@ namespace GymManagementBLL.Services.Classes
         {
             try
             {
-                if (IsEmailExists(memberToUpdate.Email) || IsPhoneExists(memberToUpdate.Phone)) return false;
+
+                var emailExsists = _unitOfWork.GetRepository<Member>()
+                    .GetAll(X => X.Email == memberToUpdate.Email && X.Id != MemberId).Any();
+
+                var phoneExsists = _unitOfWork.GetRepository<Member>()
+                    .GetAll(X => X.Phone == memberToUpdate.Phone && X.Id != MemberId).Any();
+
+                if (emailExsists || phoneExsists) return false;
 
                 var Repo = _unitOfWork.GetRepository<Member>();
 
@@ -155,8 +162,14 @@ namespace GymManagementBLL.Services.Classes
                 var member = MemberRepo.GetById(MemberId);
                 if (member == null) return false;
 
-                var HasActiveMemberSession = _unitOfWork.GetRepository<MemberSession>()
-                    .GetAll(ms => ms.MemberId == MemberId && ms.Session.StartDate > DateTime.Now).Any();
+                var SessionIds = _unitOfWork.GetRepository<MemberSession>()
+                    .GetAll(ms => ms.MemberId == MemberId).Select(ms=>ms.SessionId);
+                // 1 , 2 , 3
+
+                var HasActiveMemberSession = _unitOfWork.GetRepository<Session>()
+                    .GetAll(X => SessionIds.Contains(X.Id) && X.StartDate > DateTime.Now).Any();
+
+
 
                 if (HasActiveMemberSession) return false;
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Execution;
 using GymManagementBLL.Services.Interfaces;
 using GymManagementBLL.ViewModels.TrainerViewModels;
 using GymManagementDAL.Entities;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class TrainerService : ITrainerService
+    public class TrainerService : ITrainerService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -73,8 +74,13 @@ namespace GymManagementBLL.Services.Classes
         {
             try
             {
-                if (IsEmailExists(trainerToUpdate.Email) || IsPhoneExists(trainerToUpdate.Phone)) return false;
+                var emailExsists = _unitOfWork.GetRepository<Trainer>()
+                    .GetAll(X => X.Email == trainerToUpdate.Email && X.Id != trainerId).Any();
 
+                var phoneExsists = _unitOfWork.GetRepository<Trainer>()
+                    .GetAll(X => X.Phone == trainerToUpdate.Phone && X.Id != trainerId).Any();
+
+                if (emailExsists || phoneExsists) return false;
                 var TrainerRepo = _unitOfWork.GetRepository<Trainer>();
                 var trainer = TrainerRepo.GetById(trainerId);
 
