@@ -1,182 +1,157 @@
-# 🏋️‍♂️ Gym Management System
-
-A **web-based application** for managing gym operations — including member management, trainer scheduling, session booking, and membership plans — built using **ASP.NET Core MVC** with **Entity Framework Core** and **SQL Server**.
-
----
-
-## 📋 Overview
-
-**Description:**  
-This system provides a centralized platform for gym management, allowing admins to handle members, trainers, plans, and sessions efficiently.
-
-**Goals:**
-- Centralize Members and Plans management.  
-- Manage Trainers and Session schedules.  
-- Track memberships and bookings.  
-- Provide analytics and reports via dashboard.
+<h1 align="center">💪 Gym Management System</h1>
+<p align="center">
+  <b>ASP.NET Core MVC | Entity Framework Core | SQL Server</b>  
+</p>
+<p align="center">
+  A complete web-based system for managing <b>gym members, trainers, sessions, and plans</b>.  
+</p>
 
 ---
 
-## ⚙️ Features
+## 🏗️ Project Overview
+The **Gym Management System** is designed to help gyms organize their daily operations.  
+It allows admins to manage members, trainers, sessions, and memberships efficiently in a centralized dashboard.
 
-- 👨‍🏫 **Trainer Management:** Full CRUD operations.  
-- 🧍‍♂️ **Member Management:** Add, update, delete, and view members.  
-- 💪 **Plans Management:** Update, deactivate (Soft Delete), and view plans.  
-- 🧾 **Membership Management:** Assign training plans to members.  
-- 🗓️ **Session Management:** Full CRUD operations with scheduling.  
-- 📅 **Session Booking:** Organize and book sessions with members.  
-- 📊 **Dashboard:** Provides analytics and reports.
-
----
-
-## 🧱 Architecture (Three-Layer)
-
-- **Presentation Layer:** ASP.NET MVC Controllers + Razor Views (Bootstrap for UI).  
-- **Business Logic Layer:** Services (e.g., `TrainerService`, `SessionService`) handling core logic.  
-- **Data Access Layer:** Repository Pattern wrapping EF Core `DbContext`.
+### 🎯 Goals
+- Centralize management of members, trainers, and plans.  
+- Simplify scheduling and booking processes.  
+- Provide real-time insights through a dashboard.  
+- Maintain data consistency and validation across modules.
 
 ---
 
-## 🧰 Technology Stack
+## ✨ Main Features
+| Module | Description |
+|--------|--------------|
+| 👨‍🏫 Trainer Management | Add, update, delete, and view trainers with specialties. |
+| 🧍 Member Management | Manage member profiles, health records, and memberships. |
+| 🧾 Plan Management | Create, edit, deactivate (Soft Delete), and view plans. |
+| 🗓️ Session Management | Full CRUD operations with trainer and category assignments. |
+| 🎟️ Booking System | Manage session bookings and attendance. |
+| 📊 Dashboard | Provides analytics and gym statistics. |
 
-| Layer | Technology |
-|-------|-------------|
+---
+
+## 🧱 Architecture
+The project follows a **Three-Layer Architecture**:
+- Presentation Layer → ASP.NET MVC (Razor Views + Bootstrap)
+- Business Logic Layer → Services (TrainerService, SessionService, etc.)
+- Data Access Layer → EF Core + Repository Pattern + Unit of Work
+
+
+---
+
+## 🧰 Tech Stack
+| Category | Technology |
+|-----------|-------------|
 | **Backend** | ASP.NET Core MVC |
 | **ORM** | Entity Framework Core |
 | **Database** | Microsoft SQL Server |
 | **Frontend** | Razor Views + Bootstrap + Custom CSS |
-| **Patterns** | Repository, Unit of Work, Dependency Injection |
+| **Design Patterns** | Repository, Unit of Work, Dependency Injection |
 | **Libraries** | AutoMapper |
 
 ---
 
 ## 🧬 Entities Overview
 
-### 🧍 Member
-- `Id`, `Name`, `Email`, `Phone`, `DateOfBirth`, `Gender`, `Address`, `JoinDate`, `Photo`
-- Each Member:
-  - Has one **HealthRecord**
-  - Subscribes to one **Plan**
-  - Can attend many **Sessions**
+### 👤 Member
+- Contains `Id`, `Name`, `Email`, `Phone`, `Gender`, `JoinDate`, `Photo`, and `Address`.
+- Relationships:
+  - 1️⃣ Has **one HealthRecord**  
+  - 1️⃣ Has **one Membership (Plan)**  
+  - ♻️ Can attend many Sessions  
 
-### 💊 HealthRecord
-- `Height`, `Weight`, `BloodType`, `Note`, `LastUpdate`
-- Each belongs to one **Member**
+### 🩺 HealthRecord
+- Fields: `Height`, `Weight`, `BloodType`, `Note`, `LastUpdate`  
+- Linked one-to-one with **Member**
 
-### 👨‍🏫 Trainer
-- `Id`, `Name`, `Email`, `Phone`, `DateOfBirth`, `Gender`, `Address`, `Specialties`, `HireDate`
-- A Trainer can conduct many **Sessions**
+### 🏋️ Trainer
+- Fields: `Name`, `Email`, `Phone`, `HireDate`, `Specialties`
+- Conducts multiple **Sessions**
 
-### 🧾 Plan
-- `Id`, `Name`, `Description`, `DurationDays`, `Price`, `IsActive`
-- A Plan can be assigned to many Members
+### 💼 Plan
+- Fields: `Name`, `Description`, `DurationDays`, `Price`, `IsActive`
+- Assigned to multiple **Members**
 
 ### 🏷️ Category
-- `Id`, `CategoryName`
-- A Category can be associated with many Sessions
+- Fields: `CategoryName` (e.g., Yoga, Cardio)
+- Associated with multiple **Sessions**
 
-### 🕒 Session
-- `Id`, `Description`, `Capacity`, `StartDate`, `EndDate`
-- Conducted by one **Trainer** and belongs to one **Category**
+### ⏰ Session
+- Fields: `Description`, `Capacity`, `StartDate`, `EndDate`
+- Linked to one **Trainer** and one **Category**
+- Attended by many **Members**
 
 ---
 
-## 🧩 Business Rules
+## ⚖️ Business Rules Highlights
 
 ### Members
-- Email and phone must be unique and valid.  
-- Egyptian phone validation: `(010|011|012|015)XXXXXXXX`  
-- Cannot delete members with active bookings.  
-- JoinDate auto-calculated.  
-- Health record required at registration.
+- Email & phone are **unique and validated**.  
+- Egyptian phone format: `(010|011|012|015)XXXXXXXX`  
+- Health record required upon registration.  
+- Cannot delete members with active bookings.
 
 ### Trainers
-- Email and phone must be unique and valid.  
 - Cannot delete trainers with future sessions.  
 - Must have at least one specialty.  
-- HireDate auto-calculated.
+- HireDate auto-generated.
 
 ### Sessions
-- Capacity: 1–25 participants.  
+- Capacity between **1–25**.  
 - EndDate must be after StartDate.  
-- Requires valid Trainer & Category.  
-- Cannot delete future sessions.
+- Cannot delete upcoming sessions.
 
 ### Plans
-- Cannot deactivate/update plans with active memberships.  
-- Duration: 1–365 days.
+- Cannot modify active plans.  
+- Duration: **1–365 days**.  
 
-### Bookings
-1. Member must have active membership.  
-2. Session must have available capacity.  
-3. Member cannot book same session twice.  
-4. Only future sessions can be booked.  
-5. Attendance marked only for ongoing sessions.
-
-### Memberships
-1. No duplicate active memberships per member.  
-2. Only active plans can be assigned.  
-3. EndDate = StartDate + DurationDays.  
-4. Auto-status: *Active* or *Expired*.  
+### Bookings & Memberships
+- Only active members can book sessions.  
+- No duplicate active memberships.  
+- Automatic EndDate calculation.  
 
 ---
 
-## 🧠 MVC Components
+## 🧩 MVC Controllers Overview
 
-### `HomeController`
-- `Index()` → Dashboard & Statistics
-
-### `MemberController`
-- `Index()`, `Create()`, `MemberDetails()`, `HealthRecordDetails()`, `Edit()`, `Delete()`
-
-### `TrainerController`
-- `Index()`, `Create()`, `Details()`, `Edit()`, `Delete()`
-
-### `SessionController`
-- `Index()`, `Create()`, `Details()`, `Edit()`, `Delete()`
-
-### `PlanController`
-- `Index()`, `Details()`, `Edit()`, `Activate()`
-
-### `AccountController`
-- `Login()`, `Logout()`, `AccessDenied()`
+| Controller | Responsibilities |
+|-------------|------------------|
+| **HomeController** | Dashboard & overview. |
+| **MemberController** | Manage member CRUD, profiles, health records. |
+| **TrainerController** | Manage trainers & their specialties. |
+| **SessionController** | CRUD for sessions, scheduling, booking logic. |
+| **PlanController** | Manage and activate/deactivate plans. |
+| **AccountController** | Login, logout, and access control. |
 
 ---
 
 ## 🔐 Identity Module
+### 👨‍💼 ApplicationUser
+- Fields: `FirstName`, `LastName`, `UserName`, `Email`, `Phone`
+- Each user can have multiple roles.
 
-### ApplicationUser
-- `Id`, `FirstName`, `LastName`, `UserName`, `Email`, `Phone`
-- One user → many roles.
-
-### IdentityRole
-- `Id`, `Name`, `NormalizedName`, `ConcurrencyStamp`
-- One role → many users.
-
----
-
-## 🧾 Database Schema Highlights
-
-- **GymUser (Abstract)** → Shared fields for Members & Trainers.  
-- **Booking** → Junction table (Members–Sessions).  
-- **Membership** → Junction table (Members–Plans).  
-- **HealthRecord** → Linked one-to-one with Member.  
-- **Category** → Seeded data (Cardio, Yoga, etc.).
+### 🧩 IdentityRole
+- Fields: `Name`, `NormalizedName`, `ConcurrencyStamp`
+- Each role can have multiple users.
 
 ---
 
-## 🚀 Key Tools
-
-- **AutoMapper** for ViewModel ↔ Entity mapping.  
-- **Dependency Injection** for clean architecture.  
-- **Repository Pattern** for reusable data access logic.
-
----
-
-## 👨‍💻 Developed For
-**ASP.NET Course Project — Gym Management System**
+## 🗄️ Database Design
+**Core Tables:**  
+- `Members`, `Trainers`, `Plans`, `Sessions`, `Categories`  
+**Junction Tables:**  
+- `Bookings` (Members ↔ Sessions)  
+- `Memberships` (Members ↔ Plans)  
+**Supporting:**  
+- `HealthRecords` (One-to-One with Member)
 
 ---
 
-## 🏁 Author
-**Mohamed Tarek**
+## 🧠 Key Tools & Concepts
+- 🧭 **AutoMapper** — map between Entities and ViewModels.  
+- 💉 **Dependency Injection** — for cleaner architecture.  
+- 🗃️ **Repository & Unit of Work** — abstraction over EF Core.  
+- 🪶 **Soft Delete** — for plan deactivation instead of permanent removal.
+
