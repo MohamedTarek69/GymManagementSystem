@@ -14,7 +14,7 @@ namespace GymManagementDAL.Data.Configurations
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.Property(X => X.CategoryName)
-                   .HasColumnName("varchar")
+                   .HasColumnType("varchar")
                    .HasMaxLength(50);
         }
     }

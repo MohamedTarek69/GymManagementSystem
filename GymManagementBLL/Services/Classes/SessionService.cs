@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class SessionService : ISessionService
+    public class SessionService : ISessionService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -48,6 +48,11 @@ namespace GymManagementBLL.Services.Classes
 
             #region Automatic Mapping
             var MappedSessions = _mapper.Map<IEnumerable<Session>,IEnumerable<SessionViewModel>>(Sessions);
+            foreach (var sessionVm in MappedSessions)
+            {
+                sessionVm.AvailableSlots = sessionVm.Capacity - _unitOfWork.sessionRepository.GetCountOfBookedSlots(sessionVm.Id);
+            }
+
 
             return MappedSessions;
 
@@ -78,10 +83,12 @@ namespace GymManagementBLL.Services.Classes
             var MappedSession = _mapper.Map<Session, SessionViewModel>(session);
             MappedSession.AvailableSlots = session.Capacity - _unitOfWork.sessionRepository.GetCountOfBookedSlots(session.Id);
 
+
             return MappedSession;
 
             #endregion
         }
+
         public bool CreateSession(CreateSessionViewModel createSession)
         {
             if(!IsTrainerExsists(createSession.TrainerId)) return false;
@@ -144,6 +151,19 @@ namespace GymManagementBLL.Services.Classes
                 return false;
             }
         }
+        public IEnumerable<TrainerSelectViewModel> GetAllTrainersForDropDown()
+        {
+            var trainers = _unitOfWork.GetRepository<Trainer>().GetAll();
+
+            return _mapper.Map<IEnumerable<Trainer>, IEnumerable<TrainerSelectViewModel>>(trainers);
+        }
+
+        public IEnumerable<CategorySelectViewModel> GetAllCategoriesForDropDown()
+        {
+            var categories = _unitOfWork.GetRepository<Category>().GetAll();
+
+            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategorySelectViewModel>>(categories);
+        }
 
 
         #region Helper Methods
@@ -189,6 +209,7 @@ namespace GymManagementBLL.Services.Classes
             return true;
 
         }
+
 
         #endregion
 
