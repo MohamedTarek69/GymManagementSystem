@@ -39,6 +39,8 @@ namespace GymManagementPL
             //builder.Services.AddScoped<IPlanRepository, PlanRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); 
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+            builder.Services.AddScoped<IMemberShipRepository, MemberShipRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddAutoMapper(X => X.AddProfile(new MappingProfile()));
             builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
             builder.Services.AddScoped<IMemberService, MemberService>();
@@ -46,6 +48,8 @@ namespace GymManagementPL
             builder.Services.AddScoped<IPlanService, PlanService>();
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+            builder.Services.AddScoped<IMemberShipService, MemberShipService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
             {
                 config.User.RequireUniqueEmail = true;
@@ -57,6 +61,7 @@ namespace GymManagementPL
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
             builder.Services.AddScoped<IAccountService , AccountService>();
+
 
             //builder.Services.AddIdentityCore<ApplicationUser>
             //    ().AddEntityFrameworkStores<GymDbContext>();

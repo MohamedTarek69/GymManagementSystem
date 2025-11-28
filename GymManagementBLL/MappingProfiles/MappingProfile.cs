@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using GymManagementBLL.ViewModels.BookingViewModels;
+using GymManagementBLL.ViewModels.MemberShipViewModels;
+using GymManagementBLL.ViewModels.MemberViewModels;
 using GymManagementBLL.ViewModels.PlanViewModels;
 using GymManagementBLL.ViewModels.SessionViewModels;
 using GymManagementBLL.ViewModels.TrainerViewModels;
-using GymManagementBLL.ViewModels.MemberViewModels;
 using GymManagementDAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -98,6 +100,8 @@ namespace GymManagementBLL.MappingProfiles
             MapSession();
             MapMember();
             MapPlan();
+            MapMembership();
+            MapBooking();
 
         }
 
@@ -188,6 +192,29 @@ namespace GymManagementBLL.MappingProfiles
             CreateMap<UpdatePlanViewModel, Plan>()
            .ForMember(dest => dest.Name, opt => opt.Ignore())
            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now));
+
+        }
+        private void MapMembership()
+        {
+            CreateMap<MemberShip, MemberShipViewModel>()
+                 .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                 .ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plan.Name))
+                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.CreatedAt.ToString("MMM dd, yyyy")))
+                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("MMM dd, yyyy")));
+
+            CreateMap<CreateMembershipViewModel, MemberShip>();
+
+            CreateMap<Member, MemberSelectViewModel>();
+            CreateMap<Plan, PlanSelectViewModel>();
+        }
+        private void MapBooking()
+        {
+            CreateMap<MemberSession, MemberForSessionViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt.ToShortDateString()));
+
+            CreateMap<CreateBookingViewModel, MemberSession>()
+                .ForMember(dest => dest.IsAttended, opt => opt.Ignore());
 
         }
 

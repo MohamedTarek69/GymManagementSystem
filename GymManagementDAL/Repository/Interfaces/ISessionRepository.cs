@@ -1,4 +1,5 @@
 ﻿using GymManagementDAL.Entities;
+using GymManagementDAL.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,5 @@ namespace GymManagementDAL.Repository.Interfaces
         int GetCountOfBookedSlots(int sessionId);
 
         Session? GetSessionByIdWithTrainersAndCategories(int sessionId);
-
     }
 }
